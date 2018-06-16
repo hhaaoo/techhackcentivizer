@@ -1,43 +1,3 @@
-<!DOCTYPE html>
-<html>
-
-<head>
-<script src="/socket.io/socket.io.js"></script>
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-
-</head>
-<body>
-	<div class="container-fluid">
-		
-		<div class="container col-md-12">
-			<div class="col-md-5"></div>		
-			<h1 class="col-md-2">Ping Pong</h1>
-			<div class="col-md-5"></div>		
-		</div>
-
-		<div class="container col-md-12 panel panel-primary">
-			<div class="col-xs-3"></div>
-			<div class="col-md-6 panel-heading img-rounded">
-				<h3>
-					<div class="col-md-3" style="left:40px;">Player 1</div>
-					<div class="col-md-3 pull-right"  style="left:60px;">Player 2</div>
-				</h3>
-			</div>
-			<div class="col-md-3"></div>
-		
-			<div class="col-md-12 panel-body">
-				<div class="col-xs-3"></div>
-				<div class="col-md-4" style="left:40px;"> 
-					<canvas style="border:1px solid black;" id="pong" width=800 height=600></canvas>
-				</div>
-				<div class="col-sm-3"></div>
-			</div>
-		</div>
-	</div>
-
-<script>
 	$(document).ready(function () {
 		var snd = new Audio("http://static1.grsites.com/archive/sounds/misc/misc125.wav"); 
 		var canvas;
@@ -101,15 +61,9 @@
 				return;
 			}
 			
-			if(pauseScreen){
-				canvasContext.fillStyle = "#FFFFFF";
-				canvasContext.font = "30px Comic Sans MS";
-				canvasContext.fillText("Resetting in 3, 2, 1...",canvas.height/2,canvas.width/2);
-				setTimeout(function(){
-					pauseScreen = false;
-				}, 3000);
-				return;
-			}
+			// if(pauseScreen){
+			// 	canvasContext.fillStyle = "";
+			// }
 
 			drawNet();
 			//player paddles
@@ -124,9 +78,6 @@
 		
 		function moveEverything(){
 			if (showingWinScreen){
-				return;
-			}
-			if(pauseScreen){
 				return;
 			}
 			computerMovement();
@@ -211,8 +162,7 @@
 				}
 			}
 			else
-			{	
-				pauseScreen = true;
+			{
 				ballSpeedX= -ballSpeedX;
 				ballX = canvas.width/2;
 				ballY = canvas.height/2;
@@ -236,17 +186,11 @@
 			//TODO: Enter to start 
 
 			setInterval(function () {
-				if(!pauseScreen){
-					drawEverything();
-					moveEverything();
-				}
-				else{
-					drawEverything();
-				}
+				drawEverything();
+				moveEverything();
+
 
 			}, 1000/ framesPerSecond);
-
-
 			document.onkeydown = function (e) {
 				switch (e.keyCode) {
 					case 38:
@@ -303,7 +247,3 @@
 			paddle1Y += 10;
 		}
 	});
-
-</script>
-
-</html>
