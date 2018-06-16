@@ -6,46 +6,28 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 </head>
 <body>
-	<h1>Tem</h1>
+	<h1>Pong</h1>
 	<div id="game_holder"></div>
-	<canvas style="border:1px solid black;" id="pong" width=600 height=800></canvas>
+	<canvas style="border:1px solid black;" id="pong" width=800 height=600></canvas>
 
 </body>
 
 <script>
-		var canvas;
+$( document ).ready(function() {
+   		var canvas;
 		var canvasContext;
 		var ballX = 50;
 		var ballY = 50;
 		var ballSpeedX = 5;
 		var ballSpeedY = 4;
-		var paddle1Y = 250;
-		var paddle2Y = 400; //human player
+		var paddle1Y = 400;
+		var paddle2Y = 250;
 		const PADDLE_HEIGHT = 100;
 		const PADDLE_THICKNESS = 10;
 		var player1Score = 0;
 		var player2Score = 0;
 		const WINNING_SCORE = 5;
 		var showingWinScreen = false;
-
-        var socket = io('http://192.168.0.100:3000');
-        socket.emit('buttons start', {chatroom: 'buttons'});
-        socket.on('button load', function(msg){
-          console.log(msg.buttonNo);
-          if (msg.buttonNo === '1'){
-            //0 corresponds to first button from right
-            //do something here (ex. move cursor up on the screen, play a video)
-          }
-          else if (msg.buttonNo === '2'){
-            //1 corresponds to second button from right
-            //do something else here
-          }
-        });
-        socket.on('button hit', function(msg){
-            //the flashing button was hit, yeeeeeaah
-            //do something here
-            console,log(msg.buttonNo);
-        });
 
 		function handleMouseClick(evt){
 			if (showingWinScreen){
@@ -74,7 +56,7 @@
 		}
 		
 		function drawEverything(){
-			colorRect(0, 0, canvas.width, canvas.height, "black");
+			colorRect(0, 0, canvas.width, canvas.height, "green");
 			
 			if (showingWinScreen){
 				canvasContext.fillStyle = "red";
@@ -169,13 +151,10 @@
 				paddle2Y = paddle2Y - 6;
 			}
 		}
-
-
+    
 		$(window).load(function() {
-		canvas=document.getElementById("pong");
-		context=canvas.getContext("2d");
-		//canvas = document.getElementById("gameCanvas");
-		//canvasContext = canvas.getContext("2d");
+		  canvas = document.getElementById("pong");
+		  canvasContext = canvas.getContext("2d");
 		  var framesPerSecond = 30;
 		  setInterval(function() {
 		      moveEverything();
@@ -189,7 +168,13 @@
 		    var mousePos = calculateMousePos(evt);
 		    paddle1Y = mousePos.y - (PADDLE_HEIGHT / 2);
 		  });
-		});
+		});	 
+});
+
+
+
+
+
 </script>
 
 </html>
