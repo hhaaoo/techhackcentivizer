@@ -18,11 +18,12 @@ $( document ).ready(function() {
 		var canvasContext;
 		var ballX = 50;
 		var ballY = 50;
-		var ballSpeedX = 5;
-		var ballSpeedY = 4;
+		var ballSpeedX = 1;
+		var ballSpeedY = 1;
 		var paddle1Y = 400;
 		var paddle2Y = 250;
 		const PADDLE_HEIGHT = 100;
+		const PADDLE1_HEIGHT = 300;
 		const PADDLE_THICKNESS = 10;
 		var player1Score = 0;
 		var player2Score = 0;
@@ -72,7 +73,8 @@ $( document ).ready(function() {
 			
 			drawNet();
 			//player paddles
-			colorRect(0, paddle1Y, PADDLE_THICKNESS, PADDLE_HEIGHT, "white");
+			colorRect(0, paddle1Y, PADDLE_THICKNESS, PADDLE1_HEIGHT, "white");
+			//colorRect(0, paddle1Y, PADDLE_THICKNESS, PADDLE1_HEIGHT, "white");
 			colorRect(canvas.width - PADDLE_THICKNESS, paddle2Y, 10, PADDLE_HEIGHT, "white");
 			colorCircle(ballX,ballY,10,"white");
 			
@@ -117,6 +119,14 @@ $( document ).ready(function() {
 			if (ballY > canvas.height || ballY <0){
 				ballSpeedY = -ballSpeedY;
 			}
+
+
+			//keep paddle1 from leaving the board
+			if ((paddle1Y + PADDLE1_HEIGHT) >= canvas.height) {
+				paddle1Y = canvas.height - PADDLE1_HEIGHT ;
+			} else if (paddle1Y <= 0) {
+				paddle1Y = 0;
+			}
 		}
 		
 		function colorRect(leftX, topY, width, height, drawColor){
@@ -157,52 +167,58 @@ $( document ).ready(function() {
 		  canvasContext = canvas.getContext("2d");
 		  var framesPerSecond = 30;
 		  setInterval(function() {
+		  	  drawEverything();
 		      moveEverything();
-		      drawEverything();
+		     
 		    },
 		    1000 / framesPerSecond);
 
 		  canvas.addEventListener("mousedown", handleMouseClick);
+
 
 		  canvas.addEventListener("mousemove", function(evt) {
 		    var mousePos = calculateMousePos(evt);
 		    paddle1Y = mousePos.y - (PADDLE_HEIGHT / 2);
 		  });
 
+
 		//code for button
 		var socket = io('http://192.168.0.100:3000');
-        socket.emit('buttons start', {chatroom: 'buttons'});
-        socket.on('button load', function(msg){
+         socket.emit('joystick start', {chatroom: 'joystick'});
+        
+        //socket.emit('buttons start', {chatroom: 'buttons'});
+        
+        socket.on('joystick press', function(msg){
+        //socket.on('button load', function(msg){
           console.log(msg.buttonNo);
-          if (msg.buttonNo === '1'){
+          if (msg.buttonNo === '8'){  //10 is left, 8 is up, 
+          	 //socket.trigger("moveLeft");
+          	 moveUp();
             //0 corresponds to first button from right
             //do something here (ex. move cursor up on the screen, play a video)
           }
-          else if (msg.buttonNo === '2'){
-            //1 corresponds to second button from right
-            //do something else here
-          }
-          else if (msg.buttonNo === '3'){
-            //2 corresponds to third button from right
-            //do another thing here
-          }
-          else if (msg.buttonNo === '4'){
+          else if (msg.buttonNo === '10'){
             //3 corresponds to forth button from right
             //do more things here
+            //socket.trigger("moveRight");
+            //socket.on("moveRight");
+            moveDown();
           }
-          else if (msg.buttonNo === '5'){
-            //4 corresponds to fifth button from right
-            //do more things here
-          }
-
-
         });
         socket.on('button hit', function(msg){
             //the flashing button was hit, yeeeeeaah
             //do something here
-            console,log(msg.buttonNo);
+            console.log(msg.buttonNo);
         }); 
 		});	 
+
+		function moveUp(){
+			paddle1Y -= 10;
+        };
+
+        function moveDown(){
+        	 paddle1Y += 10;
+        }
 });
 
 
