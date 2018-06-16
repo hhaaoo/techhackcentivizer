@@ -1,0 +1,42 @@
+<html>
+ <head>
+    <title> Wheel Sample Code </title>
+    <script src="/socket.io/socket.io.js"></script>
+ </head>
+ <body>
+
+<div id="img_home"></div>
+
+<canvas style="border:1px solid black;" id="joystick" width=500 height=500></canvas>
+<script>
+
+var canvas=document.getElementById("joystick");
+var context=canvas.getContext("2d");
+var width=canvas.width;
+var height=canvas.height;
+var socket = io('http://192.168.0.100:3000');
+        //socket.connect('http://127.0.0.1:3000');
+    socket.emit('wheel start', {chatroom: 'wheel'});
+
+        //The code below displays a black rectangle on the right side of the screen
+        socket.on('wheel right', function(msg){
+
+      context.fillStyle="white";
+          context.fillRect(0,0,width,height);
+      context.fillStyle="black";
+      context.fillRect(width-100,height/2,100,100);
+
+    });
+
+        //The code below displays a black rectangle on the left side of the screen
+    socket.on('wheel left', function(msg){
+
+      context.fillStyle="white";
+          context.fillRect(0,0,width,height);
+      context.fillStyle="black";
+      context.fillRect(10,height/2,100,100);
+    });
+
+</script>
+</body>
+</html>

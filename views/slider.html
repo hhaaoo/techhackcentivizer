@@ -1,0 +1,39 @@
+<html>
+ <head>
+    <title> Slider Sample Code </title>
+    <script src="/socket.io/socket.io.js"></script>
+ </head>
+ <body>
+
+<div id="img_home" style="float:right;">
+<img id="imageId" style="width:400px;" src="https://images.pexels.com/photos/221415/pexels-photo-221415.jpeg?auto=compress&cs=tinysrgb&h=350"/>
+</div>
+
+
+<script>
+var socket = io('http://192.168.0.100:3000');
+        //socket.connect('http://127.0.0.1:3000');
+        socket.emit('slider start', {chatroom: 'slider'});
+
+
+
+ socket.on('slider right', function(msg){     
+           //Complete action to be carried out when slider is moved to the right
+          //The code below displays a picture of winter season on the right side of the screen 
+    document.getElementById("img_home").style.float="right";
+    document.getElementById("imageId").src="https://images.pexels.com/photos/221415/pexels-photo-221415.jpeg?auto=compress&cs=tinysrgb&h=350";
+
+        });
+        socket.on('slider left', function(msg){     
+           //Complete action to be carried out when slider is moved to the left
+          //The code below displays a picture of summer season on the left side of the screen 
+    document.getElementById("img_home").style.float="left";
+    document.getElementById("imageId").src="http://healthnewsfield.com/wp-content/uploads/2017/12/summer-planning.jpg";
+
+        });
+
+
+
+</script>
+</body>
+</html>
