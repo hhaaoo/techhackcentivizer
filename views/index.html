@@ -157,7 +157,7 @@
 		}
 		
 		function next_level(){
-			if (WINNING_SCORE == 15){
+			if (WINNING_SCORE == 20){
 				showingWinScreen = true;
 			} else {
 				WINNING_SCORE += 5;
@@ -167,6 +167,14 @@
 		function ballReset(){
 			if (player1Score >= WINNING_SCORE || player2Score >= WINNING_SCORE){
 				next_level();
+				
+				if ((player1Score - player2Score) > 2){
+					PADDLE1_HEIGHT = PADDLE1_HEIGHT*0.25; 
+				}
+
+				if ((player2Score - player1Score) > 2){
+					PADDLE2_HEIGHT = PADDLE2_HEIGHT*0.25; 
+				}
 			}
 			else
 			{
