@@ -10,8 +10,8 @@ $(document).ready(function () {
 	var textColor = "#333300";
 	var ballX = 100;
 	var ballY = 100;
-	var ballSpeedX = 5;
-	var ballSpeedY = 5;
+	var ballSpeedX = 0;
+	var ballSpeedY = 0;
 	var paddle1Y = 400;
 	var paddle2Y = 250;
 	var PADDLE2_HEIGHT = 100;
@@ -29,6 +29,7 @@ $(document).ready(function () {
 	var ballColor = "#196619";
 	// var playGame = false;
 	var framesPerSecond = 100;
+	var paddleShrinkCounter = 0;
 
 	// Toggle on and off selection page
 	$(".selectionButton").on('click', function(){
@@ -191,12 +192,23 @@ $(document).ready(function () {
 		if (player1Score >= WINNING_SCORE || player2Score >= WINNING_SCORE){
 			next_level();
 
+			// Reduce paddle size by 10% every time there is a difference > 5
 			if ((player1Score - player2Score) > 2){
-				PADDLE1_HEIGHT = PADDLE1_HEIGHT*0.25; 
+				paddleShrinkCounter +=1;
+				if(paddleShrinkCounter > 4){
+					PADDLE1_HEIGHT = PADDLE1_HEIGHT*0.25; 	
+					paddleShrinkCounter = 0;
+				}
+
 			}
 
+			// Reduce paddle size by 10% every time there is a difference > 5
 			if ((player2Score - player1Score) > 2){
-				PADDLE2_HEIGHT = PADDLE2_HEIGHT*0.25; 
+				paddleShrinkCounter +=1;
+				if(paddleShrinkCounter > 4){
+					PADDLE2_HEIGHT = PADDLE2_HEIGHT*0.25; 
+					paddleShrinkCounter = 0;
+				}
 			}
 		}
 		else
@@ -210,16 +222,16 @@ $(document).ready(function () {
 	}
 
 	 function computerMovement() {
-		var paddle2YCenter = paddle2Y + (PADDLE2_HEIGHT / 2);
-		if (paddle2YCenter < ballY - 35) {
-			paddle2Y = paddle2Y + 6;
-		} else if (paddle2YCenter > ballY + 35) {
-			paddle2Y = paddle2Y - 6;
-		}
+		// var paddle2YCenter = paddle2Y + (PADDLE2_HEIGHT / 2);
+		// if (paddle2YCenter < ballY - 35) {
+		// 	paddle2Y = paddle2Y + 6;
+		// } else if (paddle2YCenter > ballY + 35) {
+		// 	paddle2Y = paddle2Y - 6;
+		// }
 	}
 
-		canvas = document.getElementById("pong");
-		canvasContext = canvas.getContext("2d");
+	canvas = document.getElementById("pong");
+	canvasContext = canvas.getContext("2d");
 
 	function playGame(){
 		//TODO: Enter to start
@@ -257,37 +269,48 @@ $(document).ready(function () {
 		canvas.addEventListener("mousemove", function (evt) {
 			var mousePos = calculateMousePos(evt);
 			paddle1Y = mousePos.y - (PADDLE2_HEIGHT / 2);
+		});
 
+	//Joystick socket
+	var joystickSocket = io('http://192.168.0.100:3000');
+	joystickSocket.emit('joystick start', { chatroom: 'joystick' });
 
-		//code for button
-		var socket = io('http://192.168.0.100:3000');
-		socket.emit('joystick start', { chatroom: 'joystick' });
-
-		//socket.emit('buttons start', {chatroom: 'buttons'});
-
-		socket.on('joystick press', function (msg) {
-			//socket.on('button load', function(msg){
+	joystickSocket.on('joystick press', function (msg) {
 			console.log(msg.buttonNo);
-			if (msg.buttonNo === '8') {  //10 is left, 8 is up, 
-				//socket.trigger("moveLeft");
+			if (msg.buttonNo === '10') {
 				moveUp();
-				//0 corresponds to first button from right
-				//do something here (ex. move cursor up on the screen, play a video)
 			}
-			else if (msg.buttonNo === '10') {
-				//3 corresponds to forth button from right
-				//do more things here
-				//socket.trigger("moveRight");
-				//socket.on("moveRight");
+			else if (msg.buttonNo === '11') {
 				moveDown();
 			}
-		});
-		socket.on('button hit', function (msg) {
-			//the flashing button was hit, yeeeeeaah
-			//do something here
-			console.log(msg.buttonNo);
-		});
 	});
+
+	joystickSocket.on('button hit', function (msg) {
+			console.log(msg.buttonNo);
+	});
+
+	//Wheel socket
+	var wheelSocket = io('http://192.168.0.100:3000');
+        //socket.connect('http://127.0.0.1:3000');
+    wheelSocket.emit('wheel start', {chatroom: 'wheel'});
+
+    //The code below displays a black rectangle on the right side of the screen
+    wheelSocket.on('wheel right', function(msg){
+        	moveRightPaddle2();
+    });
+
+    //The code below displays a black rectangle on the left side of the screen
+    wheelSocket.on('wheel left', function(msg){
+	    	moveLeftPaddle2();
+    });
+
+    function moveLeftPaddle2(){
+    	paddle2Y -= 50;
+    }
+
+    function moveRightPaddle2(){
+    	paddle2Y += 50;
+    }
 
 	function moveUp() {
 		paddle1Y -= 10;
