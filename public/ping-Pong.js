@@ -1,11 +1,13 @@
-$(document).ready(function () 
+
+$(document).ready(function () {
 	var canvasContainer = $("#canvasContainer");
 	var modeSelection = $("#modeSelection");
 	// var snd = new Audio("http://static1.grsites.com/archive/sounds/misc/misc125.wav"); 
 
 	var canvas;
 	var canvasContext;
-	var canvasFieldColor = "#009900";
+	var canvasFieldColor = " #ffe0b3";
+	var textColor = "#333300";
 	var ballX = 100;
 	var ballY = 100;
 	var ballSpeedX = 5;
@@ -22,7 +24,10 @@ $(document).ready(function ()
 	var pauseScreen = false;
 	var singlesClick = $("#singlePlayer");
 	var doublesClick = $("#doublePlayer");
-	var playGame = false;
+	var fenceColor = "#990000";
+	var paddleColor = "#000066";	
+	var ballColor = "#196619";
+	// var playGame = false;
 	var framesPerSecond = 100;
 
 	// Toggle on and off selection page
@@ -64,15 +69,15 @@ $(document).ready(function ()
 	
 	function drawNet(){
 		for (var i = 0;i<canvas.height;i+=40){
-			colorRect(canvas.width/2 - 1,i,2,20,"white");
+			colorRect(canvas.width/2 - 1,i,2,20,fenceColor);
 		}
 	}
 	
 	function drawEverything(){
 		colorRect(0, 0, canvas.width, canvas.height, canvasFieldColor);
-		pauseScreen = true;		
+		//pauseScreen = true;		
 		if (showingWinScreen){
-			canvasContext.fillStyle = "#FFFFFF";
+			canvasContext.fillStyle = textColor;
 			canvasContext.font = "30px Comic Sans MS";
 
 			if (player1Score >= WINNING_SCORE){
@@ -86,9 +91,9 @@ $(document).ready(function ()
 		}
 		
 		if(pauseScreen){
-			canvasContext.fillStyle = "#FFFFFF";
+			canvasContext.fillStyle = textColor;
 			canvasContext.font = "30px Comic Sans MS";
-			canvasContext.fillText("Resetting in 3, 2, 1...",canvas.height*0.40,canvas.width/2);
+			canvasContext.fillText("Resetting in 3, 2, 1...",canvas.height*0.45,canvas.width/2);
 			setTimeout(function(){
 				pauseScreen = false;
 			}, 3000);
@@ -97,10 +102,10 @@ $(document).ready(function ()
 
 		drawNet();
 		//player paddles
-		colorRect(0, paddle1Y, PADDLE_THICKNESS, PADDLE1_HEIGHT, "white");
+		colorRect(0, paddle1Y, PADDLE_THICKNESS, PADDLE1_HEIGHT, paddleColor);
 		//colorRect(0, paddle1Y, PADDLE_THICKNESS, PADDLE1_HEIGHT, "white");
-		colorRect(canvas.width - PADDLE_THICKNESS, paddle2Y, 10, PADDLE2_HEIGHT, "white");
-		colorCircle(ballX,ballY,10,"white");
+		colorRect(canvas.width - PADDLE_THICKNESS, paddle2Y, 10, PADDLE2_HEIGHT, paddleColor);
+		colorCircle(ballX,ballY,10,ballColor);
 		
 		canvasContext.fillText(player1Score,100,100);
 		canvasContext.fillText(player2Score,canvas.width-100,100);

@@ -1,0 +1,43 @@
+#loading {
+  position:relative;
+    background: no-repeat url("/Tennis.jpg") 50% / 100%;
+    border-bottom: 2px solid #000;
+}
+
+
+#loading > img{
+    vertical-align: top;
+    width: 100%; /* max width */
+    opacity: 0;  /* make it transparent */
+}
+
+#loading > div{
+    position: absolute;
+    top: 0;
+    width:100%;
+    height:100%;
+}
+
+#title {
+	position: relative;
+	font-size: 35px;
+	margin-top: 40%;
+	margin-left: 15%;
+	background-color:  #ffd699;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+.selectionButton{
+	position: relative;
+	font-size: 35px;
+	margin-top: 20%;
+	margin-left: 75%;
+	background-color:  #ffd699;
+	padding-left: 10px;
+	padding-right: 10px;	
+}
+
+.selectionButton:hover{
+	background-color:  #ffc266;
+};
