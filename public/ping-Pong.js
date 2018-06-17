@@ -1,17 +1,15 @@
-
 $(document).ready(function () {
 	var canvasContainer = $("#canvasContainer");
 	var modeSelection = $("#modeSelection");
-	// var snd = new Audio("http://static1.grsites.com/archive/sounds/misc/misc125.wav"); 
-
+	var snd = new Audio("http://static1.grsites.com/archive/sounds/misc/misc125.wav"); 
 	var canvas;
 	var canvasContext;
 	var canvasFieldColor = " #ffe0b3";
 	var textColor = "#333300";
 	var ballX = 100;
 	var ballY = 100;
-	var ballSpeedX = 0;
-	var ballSpeedY = 0;
+	var ballSpeedX = 2;
+	var ballSpeedY = 2;
 	var paddle1Y = 400;
 	var paddle2Y = 250;
 	var PADDLE2_HEIGHT = 100;
@@ -27,9 +25,9 @@ $(document).ready(function () {
 	var fenceColor = "#990000";
 	var paddleColor = "#000066";	
 	var ballColor = "#196619";
-	// var playGame = false;
 	var framesPerSecond = 100;
 	var paddleShrinkCounter = 0;
+	var doublePlayerFlag = true;
 
 	// Toggle on and off selection page
 	$(".selectionButton").on('click', function(){
@@ -41,19 +39,23 @@ $(document).ready(function () {
 	// Change paddle length depending on mode
 	singlesClick.on('click', function(){
 		/// CPU has disadvantage by default
+		$("#player2Label").text("Machine")
 		PADDLE2_HEIGHT = 100;
+		doublePlayerFlag = true;
+
 	});
 
 	doublesClick.on('click', function(){
 		PADDLE2_HEIGHT = 300;
+		doublePlayerFlag = false
 	});
 
 	function handleMouseClick(evt){
+
 		if (showingWinScreen){
 			player1Score = 0;
 			player2Score = 0;
-			showingWinScreen = false;
-		
+			showingWinScreen = false;		
 		}
 	}
 	
@@ -70,7 +72,7 @@ $(document).ready(function () {
 	
 	function drawNet(){
 		for (var i = 0;i<canvas.height;i+=40){
-			colorRect(canvas.width/2 - 1,i,2,20,fenceColor);
+			colorRect(canvas.width/2 - 1, i, 2, 20, fenceColor);
 		}
 	}
 	
@@ -101,11 +103,21 @@ $(document).ready(function () {
 			return;
 		}
 
+		//
 		drawNet();
 		//player paddles
 		colorRect(0, paddle1Y, PADDLE_THICKNESS, PADDLE1_HEIGHT, paddleColor);
 		//colorRect(0, paddle1Y, PADDLE_THICKNESS, PADDLE1_HEIGHT, "white");
 		colorRect(canvas.width - PADDLE_THICKNESS, paddle2Y, 10, PADDLE2_HEIGHT, paddleColor);
+
+		// draw lines on the ground
+		colorRect(150, 300, 500, 1, paddleColor);
+		colorRect(0, 10, 800, 2, paddleColor);
+		colorRect(0, 590, 800, 2, paddleColor);
+
+		// Horizontal Line
+		colorRect(150, 10, 1, 580, paddleColor);
+		colorRect(650, 10, 1, 580, paddleColor);
 		colorCircle(ballX,ballY,10,ballColor);
 		
 		canvasContext.fillText(player1Score,100,100);
@@ -130,9 +142,6 @@ $(document).ready(function () {
 			{
 				ballSpeedX = -ballSpeedX;
 				snd.play();
-				//var deltaY = ballY - (paddle2Y + PADDLE2_HEIGHT/2);
-				//ballSpeedY = deltaY * 0.35;
-
 			} else {
 				player1Score+=1;
 				ballReset();
@@ -145,16 +154,14 @@ $(document).ready(function () {
 			console.log(ballX);
 			if (ballY > paddle1Y && ballY < paddle1Y + PADDLE1_HEIGHT) {
 				ballSpeedX = -ballSpeedX;
-				snd.play();
-				// var deltaY = ballY - (paddle1Y + PADDLE2_HEIGHT/2);
-				// ballSpeedY = deltaY * 0.35;
+				snd.play();		
 			} else {
-				player2Score += 1;
-				console.log("adding player 2 score", player2Score);
+				player2Score += 1;		
 				ballReset();				
 			}
 		}
 
+		// reverse ball after collosison
 		if (ballY > canvas.height || ballY < 0){
 			ballSpeedY = -ballSpeedY;
 		}
@@ -165,6 +172,14 @@ $(document).ready(function () {
 		} 
 		else if (paddle1Y <= 0) {
 			paddle1Y = 0;
+		}
+
+		//keep paddle2 from leaving the board
+		if ((paddle2Y + PADDLE2_HEIGHT) >= canvas.height) {
+			paddle2Y = canvas.height - PADDLE2_HEIGHT ;
+		} 
+		else if (paddle2Y <= 0) {
+			paddle2Y = 0;
 		}
 	}
 	
@@ -214,7 +229,7 @@ $(document).ready(function () {
 		else
 		{	
 			pauseScreen = true;
-			ballSpeedX= -ballSpeedX;
+			ballSpeedX=  Math.random() < 0.5 ? -ballSpeedX: ballSpeedX;
 			ballX = canvas.width/2;
 			ballY = canvas.height/2;
 		}
@@ -222,20 +237,20 @@ $(document).ready(function () {
 	}
 
 	 function computerMovement() {
-		// var paddle2YCenter = paddle2Y + (PADDLE2_HEIGHT / 2);
-		// if (paddle2YCenter < ballY - 35) {
-		// 	paddle2Y = paddle2Y + 6;
-		// } else if (paddle2YCenter > ballY + 35) {
-		// 	paddle2Y = paddle2Y - 6;
-		// }
+	 	if(doublePlayerFlag){
+			var paddle2YCenter = paddle2Y + (PADDLE2_HEIGHT / 2);
+			if (paddle2YCenter < ballY - 35) {
+				paddle2Y = paddle2Y + 6;
+			} else if (paddle2YCenter > ballY + 35) {
+				paddle2Y = paddle2Y - 6;
+			}
+	 	}		
 	}
 
 	canvas = document.getElementById("pong");
 	canvasContext = canvas.getContext("2d");
-
 	function playGame(){
 		//TODO: Enter to start
-
 		setTimeout(function(){
 				setInterval(function () {
 		
@@ -250,33 +265,22 @@ $(document).ready(function () {
 
 		}, 3000);
 	}
-		
+
+	canvas.addEventListener("mousedown", handleMouseClick);
 
 
-	document.onkeydown = function (e) {
-			switch (e.keyCode) {
-				case 38:
-					paddle2Y -= 25;
-					break;
-				case 40:
-					paddle2Y += 25;
-					break;
-			}
-		};
-		canvas.addEventListener("mousedown", handleMouseClick);
-
-
-		canvas.addEventListener("mousemove", function (evt) {
+	canvas.addEventListener("mousemove", function (evt) {
 			var mousePos = calculateMousePos(evt);
 			paddle1Y = mousePos.y - (PADDLE2_HEIGHT / 2);
-		});
+	});
 
 	//Joystick socket
 	var joystickSocket = io('http://192.168.0.100:3000');
 	joystickSocket.emit('joystick start', { chatroom: 'joystick' });
 
+	// Joystick press
 	joystickSocket.on('joystick press', function (msg) {
-			console.log(msg.buttonNo);
+			// console.log(msg.buttonNo);
 			if (msg.buttonNo === '10') {
 				moveUp();
 			}
@@ -313,10 +317,10 @@ $(document).ready(function () {
     }
 
 	function moveUp() {
-		paddle1Y -= 10;
+		paddle1Y -= 50;
 	};
 
 	function moveDown() {
-		paddle1Y += 10;
+		paddle1Y += 50;
 	}
 });
